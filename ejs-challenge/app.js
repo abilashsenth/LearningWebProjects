@@ -2,6 +2,7 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const _ = require("lodash");
 const ejs = require("ejs");
 
 var posts = [];
@@ -49,6 +50,19 @@ app.get("/contact", function (req, res) {
 
 app.get("/compose", function (req, res) {
   res.render("compose");
+});
+
+app.get("/posts/:title", function(req,res){
+  posts.forEach(function(post){
+    const requestedTitle = _.lowerCase(req.params.title)
+    const postTitleLowercase = _.lowerCase(post.title)
+    if(requestedTitle === postTitleLowercase){
+      res.render("post", {
+        postTitle:post.title,
+        postContent:post.body
+      })
+    }
+  });
 });
 
 app.listen(3000, function () {
