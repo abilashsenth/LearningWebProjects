@@ -1,61 +1,79 @@
-const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
+const mongoose = require("mongoose");
 
-//connection url
-const url = 'mongodb://localhost:27017';
+mongoose.connect("mongodb://localhost:27017/fruitsDB", {useNewUrlParser:true});
 
-//database Name
-const dbName = 'test';
-
-//create a new MongoClient
-const client = new MongoClient(url);
-
-//use connect method to connect to the server
-client.connect(function(err) {
-    assert.equal(null, err);
-    console.log("Connected successfully to server");
-    const db = client.db(dbName);
-    findDocuments(db, function(){
-
-    client.close();
-    });
+//we create a schema for every document
+const fruitsSchema = new mongoose.Schema({
+    name: {
+        type:String,
+        required:[true,"Why no name"]
+    },
+    rating:{
+        type:Number,
+        min:1,
+        max:10
+    },
+    review: String
 });
 
-const insertDocuments = function(db, callback){
-    //get the collection    
-    const collection = db.collection("fruits");
-    //insert some documents
-    collection.insertMany([
-        {
-            name: "Apple",
-            score: 8,
-            review: "Great fruit"
-        },
-        {
-            name: "Orange",
-            score: 6,
-            review: "Kinda sour"
-        },
-        {
-            name: "Banana",
-            score: 9,
-            review: "Great stuff"
-        }
-    ], function(err, result){
-        assert.equal(err, null);
-        console.log("Inserted 3 documents into the collection");
-        callback(result);
-    });
-}
+const peopleSchema = new mongoose.Schema({
+    name:{
+        type:String
+    },
+    age:{
+        type:Number
+    }
+});
 
-const findDocuments = function(db, callback){
-    //get the documents collection
-    const collection = db.collection('fruits');
-    //find some documents
-    collection.find({}).toArray(function(err, fruits){
-        assert.equal(err, null);
-        console.log("Found the following records");
-        console.log(fruits);
-        callback(fruits);
-    });
-}
+//use schema to create mongoose "model"
+
+const Fruit = mongoose.model("Fruit", fruitsSchema );
+const People = mongoose.model("People", peopleSchema);
+
+const peach = new Fruit({
+    rating:10,
+    review:"amazing"
+});
+//peach.save();
+//create a fruit
+// const fruit = new Fruit({
+//     name: "Apple",
+//     rating: 7,
+//     review: "Apples are good"
+// });
+
+
+// Fruit.insertMany([kiwi, orange, banana], function(err){
+//     if(err){
+//         console.log(err);
+//     }else{
+//         console.log("successfully logged to fruits db");
+//     }
+// });
+
+Fruit.deleteOne({name:"Peaches"}, function(err){
+    if(err){
+        console.log(err);
+    }
+});
+
+Fruit.find(function(err, fruits){
+    
+    if(err){
+        console.log(err);
+    }else{
+        for(var i =0; i<fruits.length;i++){
+            console.log(fruits[i].name);
+        }
+    }
+});
+
+People.deleteMany({name:"john"}, function(err){
+    if(err){
+        console.log(err);
+    }else{
+        console.log("johns deleted successfully");
+    }
+});
+
+
