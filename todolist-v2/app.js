@@ -5,10 +5,13 @@ const bodyParser = require("body-parser");
 const _ = require("lodash");
 
 const app = express();
-
-mongoose.connect("mongodb://localhost:27017/todolistDB", {
-  useNewUrlParser: true,
-});
+const mongoPass = "Test123";
+mongoose.connect(
+  `mongodb+srv://admin-abilash:${mongoPass}@cluster0.6gj04.mongodb.net/todolistDB`,
+  {
+    useNewUrlParser: true,
+  }
+);
 
 //schema for todolist item
 const itemsSchema = {
@@ -76,7 +79,6 @@ app.get("/", function (req, res) {
 });
 
 app.get("/:customListName", function (req, res) {
-
   const customListName = _.capitalize(req.params.customListName);
   console.log(customListName);
   List.findOne({ name: customListName }, function (err, foundList) {
@@ -133,13 +135,15 @@ app.post("/delete", function (req, res) {
     });
     res.redirect("/");
   } else {
-    List.findOneAndUpdate({ name: listName },
-       {$pull: {items: {_id:itemId}}},
-        function (err, foundList) {
-          if(!err){
-            res.redirect("/"+listName);
-          }
-        });
+    List.findOneAndUpdate(
+      { name: listName },
+      { $pull: { items: { _id: itemId } } },
+      function (err, foundList) {
+        if (!err) {
+          res.redirect("/" + listName);
+        }
+      }
+    );
   }
 });
 
@@ -147,6 +151,6 @@ app.get("/about", function (req, res) {
   res.render("about");
 });
 
-app.listen(3000, function () {
-  console.log("Server started on port 3000");
+app.listen(process.env.PORT || 3000, function () {
+  console.log("Server started successfully");
 });
