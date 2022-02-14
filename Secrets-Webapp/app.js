@@ -1,10 +1,13 @@
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const mongooseEncryption = require("mongoose-encryption");
+const encrypt = require("mongoose-encryption");
 
 const app = express();
+
+const secret = process.env.SECRET;
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -17,13 +20,16 @@ const userSchema = new mongoose.Schema({
   password: String,
 });
 
-const secret = "Thisisourlittlesecret.";
 userSchema.plugin(encrypt, { secret: secret, encryptedFields: ["password"] });
 
 const User = mongoose.model("User", userSchema);
 
 app.get("/", function (req, res) {
   res.render("home");
+});
+
+app.get("/logout", function (req, res) {
+  res.redirect("/");
 });
 
 app.get("/login", function (req, res) {
