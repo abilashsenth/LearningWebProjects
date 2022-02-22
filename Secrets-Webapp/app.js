@@ -9,7 +9,7 @@ const passportLocalMongoose = require("passport-local-mongoose");
 
 const app = express();
 
-const secret = process.env.SECRET;
+// const secret = process.env.SECRET;
 
 app.use(express.static("public"));
 app.set("view engine", "ejs");
@@ -44,10 +44,6 @@ passport.deserializeUser(User.deserializeUser());
 
 app.get("/", function (req, res) {
   res.render("home");
-});
-
-app.get("/logout", function (req, res) {
-  res.redirect("/");
 });
 
 app.get("/login", function (req, res) {
